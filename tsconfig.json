@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "declaration": true,
+        "outDir": "./dist",
+        "strict": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "lib": [
+            "esnext",
+            "dom"
+        ],
+        "types": [
+            "chrome"
+        ],
+        "baseUrl": "./src",
+    },
+    "include": ["src"],
+    "exclude": ["node_modules"],
+}
