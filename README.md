@@ -23,9 +23,13 @@ npm i vue-use-chrome-storage
 <script setup lang="ts">
 import { useChromeStorage } from 'vue-use-chrome-storage';
 
-const chromeStorage = useChromeStorage({id: 'visible', {
-    visible: true
-}, 'local'});
+const chromeStorage = useChromeStorage({
+    id: 'visible', 
+    defaultState: {
+        visible: true
+    }, 
+    storageArea: 'local'
+});
 
 const onClick = () => {
     chromeStorage.state.visible = !chromeStorage.state.visible;
