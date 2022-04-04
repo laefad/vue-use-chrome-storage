@@ -9,26 +9,26 @@ npm i vue-use-chrome-storage
 ```
 
 # Example Usage 
-```typescript
+```ts
 <template>
     <button
         @click="onClick"
     >
         Hide
     </button>
-    <p v-if="chromeStorage.value.state">
+    <p v-if="chromeStorage.state.visible">
         Visible
     </p>
 </template>
 <script setup lang="ts">
 import { useChromeStorage } from 'vue-use-chrome-storage';
 
-const chromeStorage = useChromeStorage('state', {
-    state: true
-}, 'local');
+const chromeStorage = useChromeStorage({id: 'visible', {
+    visible: true
+}, 'local'});
 
 const onClick = () => {
-    chromeStorage.value.state = !chromeStorage.value.state;
+    chromeStorage.state.visible = !chromeStorage.state.visible;
 };
 </script>
 ```

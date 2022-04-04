@@ -1,68 +1,56 @@
-import { UnwrapNestedRefs, Ref, ref, reactive, watch } from 'vue';
-
-interface ChromeStorage<T> {
-    /** Contains current value, 
-     * which may not be synchronized with the chrome storage when an error occurs. */
-    value: UnwrapNestedRefs<T>;
-    /** Contains a last error, 
-     * but the next operation with storage will reset this to default if it is successful. */
-    error: Ref<string>;
-    /** If an error occurred during the read\write, it will be true, 
-     * but the next operation with storage will reset this to default if it is successful. */
-    hasError: Ref<boolean>;
-}
+import { ref, reactive, watch } from 'vue';
+import {
+    ChromeStorageOptions,
+    ChromeStorage,
+    Nullable
+} from './types';
 
 /**
  * Hook used for reactive access to the chrome storage.
- * @param id - the key name in chrome's storage.
- * @param defaultValue - the default value, which will be used if the chrome storage is empty.
- * @param storageArea - https://developer.chrome.com/docs/extensions/reference/storage/#property
- * @returns a hook that is synchronized with the chrome storage.
  */
-export const useChromeStorage = <T extends object>(
-    id: string,
-    defaultValue: T,
-    storageArea: chrome.storage.AreaName = "local"
-): ChromeStorage<T> => {
+export function useChromeStorage <
+    Id extends string, 
+    Value extends object
+>(
+    { id, defaultState, storageArea = 'local' }: ChromeStorageOptions<Id, Value>
+): ChromeStorage<Value> {
 
-    const value = reactive<T>(defaultValue);
-    const error = ref("");
-    const hasError = ref(false);
+    const state = reactive<Value>(defaultState);
+    const error = ref<Nullable<string>>(null);
 
-    watch(value, (currentState) => {
-        chrome.storage[storageArea].set({ [id]: currentState }, () => {
-            if (chrome.runtime.lastError) {
-                hasError.value = true;
-                error.value = chrome.runtime.lastError.message ?? "";
-                // TODO NEED TEST THIS ROLLBACK 
-                // state.value = previousState;
-            } else if (hasError.value) {
-                hasError.value = false;
-                error.value = "";
-            }
-        });
+    watch(state, (currentState) => {
+        chrome.storage[storageArea]
+            .set({ [id]: currentState })
+            .then(() => {
+                error.value = null;
+            })
+            // TODO this catch works ??
+            .catch(() => {
+                error.value = chrome.runtime.lastError?.message ?? "";
+            })
     });
 
     chrome.storage.onChanged.addListener((changes, area) => {
         if (area == storageArea && id in changes) {
-            Object.assign(value, changes[id].newValue);
+            Object.assign(state, changes[id].newValue);
         }
     });
 
     // Initial data retrieval
-    chrome.storage[storageArea].get({ [id]: defaultValue })
+    chrome.storage[storageArea]
+        .get({ [id]: defaultState })
         .then(({ [id]: data }) => {
-            Object.assign(value, data);
+            Object.assign(state, data);
+            error.value = null;
         })
         // TODO this catch works ??
         .catch(() => {
             error.value = chrome.runtime.lastError?.message ?? "";
-            hasError.value = true;
         });
 
     return {
-        value,
-        error,
-        hasError
+        state,
+        error
     };
+
 };

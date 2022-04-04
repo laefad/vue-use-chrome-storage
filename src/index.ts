@@ -1,1 +1,2 @@
-export * from "./useChromeStorage";
+export * from './useChromeStorage';
+export * from './types';
