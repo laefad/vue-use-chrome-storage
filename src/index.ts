@@ -1,5 +1,1 @@
-import { useChromeStorage } from "./useChromeStorage";
-
-export {
-    useChromeStorage
-};
+export * from "./useChromeStorage";

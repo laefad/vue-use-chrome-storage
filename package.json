@@ -1,6 +1,6 @@
 {
   "name": "vue-use-chrome-storage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Chrome storage hook for vue3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
