@@ -1,5 +1,5 @@
 import { ref, reactive, watch } from 'vue';
-import {
+import type {
     ChromeStorageOptions,
     ChromeStorage,
     Nullable
